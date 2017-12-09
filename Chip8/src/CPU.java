@@ -22,18 +22,21 @@ public class CPU {
 	
 	/**
 	 * Address 00E0
+	 * TODO: Finish this method
 	 */
 	public void clearScreen(){
 		
 	}
 	/**
 	 * Address 00EE
+	 * TODO: Finish this method
 	 */
 	public void returnFrom(){
 		
 	}
 	/**
 	 * Address 1NNN - Jumps to NNN
+	 * TODO: Finish this method
 	 * @param address
 	 */
 	public void jumpTo(short address){
@@ -41,6 +44,7 @@ public class CPU {
 	}
 	/**
 	 * Address 2NNN - calls subroutine at NNN
+	 * TODO: Finish this method
 	 * @param address
 	 */
 	public void callSubRoutine(short address){
@@ -310,6 +314,7 @@ public class CPU {
 	}
 	/**
 	 * FX33 - Takes binary representation of VX, sets I = hundreds, I+1 = tens, and I+2 = ones.
+	 * TODO: Finish this method
 	 * @param address
 	 */
 	public void setBCD(short address){
@@ -317,6 +322,7 @@ public class CPU {
 	}
 	/**
 	 * FX55 - Stores values from V0 to VX inclusive in memory starting at address I. Increment I for each write.
+	 * TODO: Finish this method
 	 * @param address
 	 */
 	public void storeV0VXatI(short address){
@@ -324,6 +330,7 @@ public class CPU {
 	}
 	/**
 	 * FX65 - Loads values starting from I into V0 to VX inclusive. Increment I for each load.
+	 * TODO: Finish this method
 	 * @param address
 	 */
 	public void loadV0VXatI(short address){
