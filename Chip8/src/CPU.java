@@ -42,7 +42,7 @@ public class CPU {
 	 * Get instruction to be run. Instructions are 2 bytes long.
 	 */
 	private short fetch(){
-		return (short) ((short) (memory[programCounter] << 8) | (memory[programCounter] & 0x00FF));
+		return (short) ((short) (memory[programCounter] << 8) | (memory[programCounter + 0x1] & 0x00FF));
 	}
 	/**
 	 * Decode and run the instruction itself.
