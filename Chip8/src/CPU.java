@@ -16,10 +16,178 @@ public class CPU {
 	private short addressRegister;
 	
 	/**
+	 * 16 16-bit values for the stack.
+	 */
+	private short[] stack;
+	
+	/**
+	 * It's a stack pointer.
+	 */
+	private byte stackPointer;
+	
+	/**
 	 * 16-bit program counter.
 	 */
 	private short programCounter;
 	
+	/**
+	 * Initialize CPU object, copy ROM to memory starting at 0x200.
+	 * @param ROM
+	 */
+	public CPU(byte[] ROM){
+		
+	}
+	
+	/**
+	 * Get instruction to be run. Instructions are 2 bytes long.
+	 */
+	private short fetch(){
+		return (short) ((short) (memory[programCounter] << 8) | (memory[programCounter] & 0x00FF));
+	}
+	/**
+	 * Decode and run the instruction itself.
+	 */
+	private void decodeAndRun(short opCode){
+		byte firstDigit = BitwiseHelpers.getFirstDigit(opCode);
+		byte lastDigit = BitwiseHelpers.getLastDigit(opCode);
+		byte thirdDigit = BitwiseHelpers.getThirdDigit(opCode);
+		switch(firstDigit){
+		case 0x0:
+			if(lastDigit == 0xE){
+				returnFrom();
+				return;
+			} else {
+				clearScreen();
+				return;
+			}
+		case 0x1:
+			jumpTo(opCode);
+			return;
+		case 0x2:
+			callSubRoutine(opCode);
+			return;
+		case 0x3:
+			skipEqualsByte(opCode);
+			return;
+		case 0x4:
+			skipNotEqualsByte(opCode);
+			return;
+		case 0x5:
+			skipXEqualsY(opCode);
+			return;
+		case 0x6:
+			setVXByte(opCode);
+			return;
+		case 0x7:
+			addVXByte(opCode);
+			return;
+		case 0x8:
+			switch(lastDigit){
+			case 0x0:
+				setVXVY(opCode);
+				return;
+			case 0x1:
+				setVXOR(opCode);
+				return;
+			case 0x2:
+				setVXAND(opCode);
+				return;
+			case 0x3:
+				setVXXOR(opCode);
+				return;
+			case 0x4:
+				addVXVY(opCode);
+				return;
+			case 0x5:
+				subVXVY(opCode);
+				return;
+			case 0x6:
+				copyVYRightShift(opCode);
+				return;
+			case 0x7:
+				subtractVYVX(opCode);
+				return;
+			case 0xE:
+				copyVYLeftShift(opCode);
+				return;
+			default: //do nothing
+			}
+		case 0x9:
+			skipVXVYNotEqual(opCode);
+			return;
+		case 0xA:
+			setAddressRegister(opCode);
+			return;
+		case 0xB:
+			jumpPlusV0(opCode);
+			return;
+		case 0xC:
+			randomVXBitAND(opCode);
+			return;
+		case 0xD:
+			drawSprite(opCode);
+			return;
+		case 0xE: //Maybe this won't handle wrong opcodes when it should??
+			if(lastDigit == 0xE){
+				skipKeyPressed(opCode);
+				return;
+			} else {
+				skipKeyNotPressed(opCode);
+			}
+		case 0xF:
+			switch(thirdDigit){
+			case 0x0:
+				if(lastDigit == 0x7){
+					setVXDelayTimer(opCode);
+					return;
+				} else {
+					storeKeyPress(opCode);
+				}
+			case 0x1:
+				switch(lastDigit){
+				case 0x5:
+					setDelayTimer(opCode);
+					return;
+				case 0x8:
+					setSoundTimer(opCode);
+					return;
+				case 0xE:
+					addVXToAddressReg(opCode);
+					return;
+				default: //Do Nothing
+				}
+			case 0x2:
+				setSpriteLocationToI(opCode);
+				return;
+			case 0x3:
+				setBCD(opCode);
+				return;
+			case 0x5:
+				storeV0VXatI(opCode);
+				return;
+			case 0x6: 
+				loadV0VXatI(opCode);
+				return;
+			default: //Do nothing
+			}
+			return;
+		default: //do nothing its invalid
+		}
+		
+	}
+	/**
+	 * Use this to initialize sound, controls etc.
+	 */
+	public void initializeEmulation(){
+		
+	}
+	/**
+	 * Infinite loop that will actually constantly call fetch/decode/run to make the game run.
+	 * Screen updates every 1/60th of a second, so wait until that time to actually execute.
+	 */
+	public void runGameLoop(){
+		
+	}
 	/**
 	 * Address 00E0
 	 * TODO: Finish this method
@@ -29,14 +197,13 @@ public class CPU {
 	}
 	/**
 	 * Address 00EE
-	 * TODO: Finish this method
 	 */
 	public void returnFrom(){
-		
+		programCounter = stack[stackPointer];
+		stackPointer = (byte)(stackPointer - 0x01);
 	}
 	/**
 	 * Address 1NNN - Jumps to NNN
-	 * TODO: Finish this method
 	 * @param address
 	 */
 	public void jumpTo(short address){
@@ -44,11 +211,12 @@ public class CPU {
 	}
 	/**
 	 * Address 2NNN - calls subroutine at NNN
-	 * TODO: Finish this method
 	 * @param address
 	 */
 	public void callSubRoutine(short address){
-		
+		stackPointer = (byte)(stackPointer + 0x01);
+		stack[stackPointer] = programCounter;
+		programCounter = BitwiseHelpers.getLastThreeDigits(address);
 	}
 	/**
 	 * Address 3XNN - skips instruction if VX == NN

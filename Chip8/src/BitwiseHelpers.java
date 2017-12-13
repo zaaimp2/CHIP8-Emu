@@ -20,5 +20,9 @@ public class BitwiseHelpers {
 	public static byte getLastTwoDigits(short address){
 		return (byte)(address & 0x00FF);
 	}
+	
+	public static byte getFirstDigit(short address){
+		return (byte)((address & 0xF000) >> 12);
+	}
 
 }
