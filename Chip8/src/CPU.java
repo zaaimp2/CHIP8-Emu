@@ -67,6 +67,7 @@ public class CPU {
 			callSubRoutine(opCode);
 			return;
 		case 0x3:
+
 			skipEqualsByte(opCode);
 			return;
 		case 0x4:
@@ -186,7 +187,7 @@ public class CPU {
 	 * Screen updates every 1/60th of a second, so wait until that time to actually execute.
 	 */
 	public void runGameLoop(){
-		
+		//test
 	}
 	/**
 	 * Address 00E0
